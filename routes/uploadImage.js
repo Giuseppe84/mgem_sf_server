@@ -6,6 +6,7 @@ const multer = require('multer');
 
 const { v4: uuidv4 } = require('uuid');
 const { S3Client, PutObjectCommand ,GetObjectCommand} = require('@aws-sdk/client-s3');
+const authenticateToken = require('../middleware/authenticateToken');
 
 const sharp = require('sharp');
 require('dotenv').config();
@@ -34,10 +35,9 @@ const upload = multer({ storage: storage ,
     fileSize: 5 * 1024 * 1024 // Limite di 5 MB (5 * 1024 * 1024 byte)
   }});
 
-const app = express();
 
 // Route per l'endpoint di upload
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/', [authenticateToken,upload.single('image')], async (req, res) => {
   
  
   const file = req.file; // Contiene i dettagli dell'immagine caricata

@@ -8,8 +8,9 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { S3Client, PutObjectCommand ,GetObjectCommand} = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const authenticateToken = require('../middleware/authenticateToken');
 
-const sharp = require('sharp');
+
 require('dotenv').config();
 // Configurazione delle credenziali AWS
 const s3Client = new S3Client({
@@ -26,7 +27,7 @@ const app = express();
 
 
 
-router.get('/:fileName', async (req, res) => {
+router.get('/:fileName', authenticateToken, async (req, res) => {
   const fileName = req.params.fileName;
   const bucketName = process.env.S3_BUCKET;
 
